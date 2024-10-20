@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:orientation="horizontal"
+    android:background="@drawable/card_item_border"
+    android:padding="8dp"> <!-- Tambahkan padding untuk memberi ruang pada border -->
+
+    <!-- Bookmark (Left Side) -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/btnBookmark"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/star" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Content and Actions -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Edit and Delete Icons (Right Side) -->
+            <ImageView
+                android:id="@+id/btnEdit"
+                android:layout_width="30dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Edit"
+                app:srcCompat="@drawable/edit_svgrepo_com" />
+
+            <ImageView
+                android:id="@+id/btnDelete"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="9dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="11dp"
+                android:layout_toStartOf="@id/btnEdit"
+                android:backgroundTint="#D31E1E"
+                android:contentDescription="Delete"
+                app:srcCompat="@drawable/delete_svgrepo_com" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@id/btnDelete"
+                android:orientation="vertical">
+
+                <!-- First Row (Nama and Hutang) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtNama"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="start"
+                        android:text="Nama"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/txtHutang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Hutang"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Second Row (Alamat) -->
+                <TextView
+                    android:id="@+id/txtAlamat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:text="Alamat"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
