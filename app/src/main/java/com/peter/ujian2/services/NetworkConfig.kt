@@ -16,7 +16,7 @@ class NetworkConfig {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://dd4d-140-213-190-87.ngrok-free.app/cicool/api/")
+            .baseUrl("https://727d-103-165-222-114.ngrok-free.app/cicool/api/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

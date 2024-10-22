@@ -61,8 +61,6 @@ class EditUser : AppCompatActivity() {
             viewModel.updateUser(userId!!, nama, alamat, hutang)
             viewModel.updateUser.observe(this) { response ->
                 if (response != null) {
-                    // Tampilkan pesan sukses atau lakukan tindakan lain
-                    Toast.makeText(this, "Pengguna berhasil diperbarui", Toast.LENGTH_SHORT).show()
                     finish() // Kembali ke aktivitas sebelumnya
                 }
             }

@@ -16,6 +16,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.Response
 
 interface UserServices {
     @Multipart
@@ -26,7 +27,18 @@ interface UserServices {
     ): Call<ResponseServices>
 
     @GET("ujian/all")
-    fun getAllUser(): Call<User>
+    suspend fun getAllUser(@Query("start") start: Int, @Query("limit") limit: Int): Response<User>
+
+    @GET("ujian/all")
+    suspend fun getUserByName(
+        @Query("filters[0][lg]") logicalOperator: String = "AND",
+        @Query("filters[0][co][0][fl]") field: String = "nama",
+        @Query("filters[0][co][0][op]") operator: String = "like",
+        @Query("filters[0][co][0][vl]") value: String? = null,
+        @Query("start") start: Int = 0,
+        @Query("limit") limit: Int = 5
+    ): Response<User>
+
 
     @FormUrlEncoded
     @POST("ujian/update")

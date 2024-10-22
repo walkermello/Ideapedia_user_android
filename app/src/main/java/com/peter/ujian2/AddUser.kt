@@ -42,12 +42,12 @@ class AddUser : AppCompatActivity() {
 
         if (nama.isNotEmpty() && alamat.isNotEmpty() && hutang.isNotEmpty()){
 
-            val rbNama = RequestBody.create("text/plain".toMediaTypeOrNull(),nama)
-            val rbAlamat = RequestBody.create("text/plain".toMediaTypeOrNull(),alamat)
-            val rbHutang = RequestBody.create("text/plain".toMediaTypeOrNull(),hutang)
+            // Menggunakan metode terbaru untuk RequestBody
+            val rbNama = RequestBody.create("text/plain".toMediaTypeOrNull(), nama)
+            val rbAlamat = RequestBody.create("text/plain".toMediaTypeOrNull(), alamat)
+            val rbHutang = RequestBody.create("text/plain".toMediaTypeOrNull(), hutang)
 
             viewModel.postUser(rbNama, rbAlamat, rbHutang)
-
         }else{
             Toast.makeText(this, "Data belum lengkap", Toast.LENGTH_SHORT).show()
         }
@@ -58,7 +58,17 @@ class AddUser : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_user)
+        // Inisialisasi komponen UI
         initComponent()
+
+        // Mengamati hasil _post dari viewModel
+        viewModel.post.observe(this) { response ->
+            if (response != null && response.status == true) {
+                finish() // Menutup activity setelah berhasil
+            } else {
+                Toast.makeText(this, "Gagal menambahkan user. Coba lagi.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         viewModel.post.observe(this){
             if (it.status == true){

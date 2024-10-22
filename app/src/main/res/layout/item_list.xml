@@ -2,16 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="3dp"
-    android:orientation="horizontal"
+    android:layout_height="100dp"
+    android:layout_margin="7dp"
     android:background="@drawable/card_item_border"
+    android:orientation="horizontal"
     android:padding="8dp"> <!-- Tambahkan padding untuk memberi ruang pada border -->
 
     <!-- Bookmark (Left Side) -->
     <androidx.cardview.widget.CardView
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center">
 
         <ImageView
@@ -37,7 +37,7 @@
             <ImageView
                 android:id="@+id/btnEdit"
                 android:layout_width="30dp"
-                android:layout_height="25dp"
+                android:layout_height="38dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="8dp"
@@ -71,22 +71,33 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
+                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/txtNama"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:gravity="start"
                         android:text="Nama"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
+                    <!-- Tambahkan TextView untuk "Rp." sebelum txtHutang -->
+                    <TextView
+                        android:id="@+id/txtRupiah"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="4dp"
+                        android:text="Rp."
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="16sp" />
+
                     <TextView
                         android:id="@+id/txtHutang"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="2"
                         android:text="Hutang"
                         android:textColor="@android:color/holo_red_dark"
@@ -100,6 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="2dp"
+                    android:layout_weight="1"
                     android:text="Alamat"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
