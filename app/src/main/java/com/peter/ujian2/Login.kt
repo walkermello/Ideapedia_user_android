@@ -1,5 +1,6 @@
 package com.peter.ujian2
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -21,5 +22,11 @@ class Login : AppCompatActivity() {
         txtUsername = findViewById(R.id.txtUsername)
         txtPassword = findViewById(R.id.txtPassword)
         btnLogin = findViewById(R.id.btnLogin)
+
+        btnLogin.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
