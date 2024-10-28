@@ -3,20 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
 
     <!-- Container for fragments -->
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"/>
 
     <!-- BottomAppBar with BottomNavigationView -->
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_gravity="bottom|end"
         android:backgroundTint="@color/navbar_color"
         app:contentInsetEnd="0dp"
         app:contentInsetStart="0dp"
@@ -28,6 +30,7 @@
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="bottom|end"
             app:backgroundTint="@android:color/transparent"
             app:elevation="0dp"
             app:itemIconTint="@color/icon_text_color_state"
@@ -39,14 +42,16 @@
     </com.google.android.material.bottomappbar.BottomAppBar>
 
     <!-- FloatingActionButton -->
+    <!-- TODO: cari cara agar floating buttonya tidak dapat bergeser, saat ini masih diatur di android manifest -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addFabBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/lamp"
-        app:layout_anchor="@id/bottomAppBar"
-        app:backgroundTint="@color/background_color"
+        app:backgroundTint="@color/navbar_color"
         app:fabSize="normal"
-        app:maxImageSize="50dp" />
+        app:layout_anchor="@id/bottomAppBar"
+        app:layout_anchorGravity="bottom|end"
+        app:maxImageSize="50dp"
+        app:srcCompat="@drawable/lamp4" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

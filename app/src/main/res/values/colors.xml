@@ -4,8 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorAccent">#FF4081</color> <!-- Contoh warna accent -->
     <color name="background_color">#F1E6Cf</color>
-    <color name="login_background_color">#E9C4AF</color>
-    <color name="navbar_color">#F8BD95</color>
+    <color name="login_background_color">#FAF6D4</color>
+    <color name="navbar_color">#ECC588</color>
 
     <color name="rippleColor">#03FF72</color>
     <color name="indicatorColor">#03FF72</color>
