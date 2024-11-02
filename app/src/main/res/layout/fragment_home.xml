@@ -6,7 +6,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@color/background_color"
     tools:context=".navbar_fragment.HomeFragment">
 
@@ -17,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:visibility="gone"
-        android:src="@drawable/back_svgrepo_com"
+        android:src="@drawable/back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/editTextSearch"
         app:layout_constraintTop_toTopOf="@+id/editTextSearch"

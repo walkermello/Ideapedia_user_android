@@ -77,7 +77,7 @@ class HomeFragment : Fragment() {
         constraintSetCollapsed.constrainPercentWidth(R.id.editTextSearch, 0.8f)
 
         // Atur RecyclerView dan adapter Paging
-        userPagingAdapter = UserPagingAdapter(::onEditUser, ::showDeleteDialog)
+        userPagingAdapter = UserPagingAdapter()
         loadStateAdapter = LoadStateAdapter { userPagingAdapter.retry() }
         lstUser.layoutManager = LinearLayoutManager(requireContext())
         lstUser.adapter = userPagingAdapter.withLoadStateFooter(loadStateAdapter)

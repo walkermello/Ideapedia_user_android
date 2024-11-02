@@ -4,9 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/background_color">
 
-    <!-- Container for fragments -->
+    <!-- Container for fragments, with bottom padding to avoid overlap -->
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
@@ -18,7 +19,7 @@
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="bottom"
         android:backgroundTint="@color/navbar_color"
         app:contentInsetEnd="0dp"
         app:contentInsetStart="0dp"
@@ -29,8 +30,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom|end"
+            android:layout_height="wrap_content"
             app:backgroundTint="@android:color/transparent"
             app:elevation="0dp"
             app:itemIconTint="@color/icon_text_color_state"
@@ -38,11 +38,9 @@
             app:itemTextColor="@color/icon_text_color_state"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/fab_bottom_menu" />
-
     </com.google.android.material.bottomappbar.BottomAppBar>
 
     <!-- FloatingActionButton -->
-    <!-- TODO: cari cara agar floating buttonya tidak dapat bergeser, saat ini masih diatur di android manifest -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addFabBtn"
         android:layout_width="wrap_content"
@@ -50,7 +48,6 @@
         app:backgroundTint="@color/navbar_color"
         app:fabSize="normal"
         app:layout_anchor="@id/bottomAppBar"
-        app:layout_anchorGravity="bottom|end"
         app:maxImageSize="50dp"
         app:srcCompat="@drawable/lamp4" />
 
