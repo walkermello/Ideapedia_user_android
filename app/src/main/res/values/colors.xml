@@ -6,7 +6,7 @@
     <color name="background_color">#F1E6Cf</color>
     <color name="login_background_color">#FAF6D4</color>
     <color name="navbar_color">#ECC588</color>
-
+    <color name="light_gray">#D4D4D4</color>
     <color name="rippleColor">#03FF72</color>
     <color name="indicatorColor">#03FF72</color>
     <color name="mainColor">#FF5722</color>

@@ -26,72 +26,104 @@
                 android:id="@+id/imgProfile"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="5dp"
                 android:src="@drawable/background_login2"
                 app:shapeAppearanceOverlay="@style/Circular"
                 app:strokeColor="@android:color/black"
                 app:strokeWidth="2dp"
-                android:padding="5dp"/>
+                android:padding="3dp"/>
 
-            <TextView
-                android:id="@+id/txtNama"
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="username"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:padding="5dp">
 
-            <!-- Post Date -->
-            <TextView
-                android:id="@+id/txtPostDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="01-01-2024"
-                android:textColor="@color/black"
-                android:layout_gravity="center_vertical" />
+                <TextView
+                    android:id="@+id/txtNama"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="username"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtPostDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="01-01-2024"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btnBookmark"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/star" />
+
+            <ImageView
+                android:id="@+id/img_detail"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/detail" />
         </LinearLayout>
 
         <!-- Post Image -->
         <ImageView
             android:id="@+id/postImageView"
-            android:src="@drawable/pdf_img"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:src="@drawable/pdf_img"
             android:layout_marginTop="4dp" />
 
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:padding="8dp">
-
-        <ImageView
-            android:id="@+id/btnBookmark"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="8dp"
-            app:srcCompat="@drawable/star" />
-
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="8dp"
-            app:srcCompat="@drawable/detail" />
-        </LinearLayout>
-
-        <!-- Post Description -->
+        <!-- Post Title -->
         <TextView
-            android:id="@+id/descriptionTextView"
+            android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description of the post"
-            android:padding="8dp"
-            android:textColor="@color/black" />
-</LinearLayout>
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="10dp"
+            android:text="Title"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    </androidx.cardview.widget.CardView>
+        <!-- Description -->
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:justificationMode="inter_word"
+            android:padding="10dp"
+            android:text="Description"
+            android:textColor="@color/black" />
+
+        <!-- More Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="more"
+                android:textColor="@android:color/holo_blue_light"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
