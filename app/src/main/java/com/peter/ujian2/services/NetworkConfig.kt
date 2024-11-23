@@ -1,5 +1,6 @@
 package com.peter.ujian2.services
 
+import com.peter.ujian2.utils.Constants
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,10 +17,12 @@ class NetworkConfig {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://e948-103-165-222-114.ngrok-free.app/cicool/api/")
+            .baseUrl(Constants.BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    fun getAuthService(): AuthServices = getRetrofit().create(AuthServices::class.java)
     fun getServiceUser() = getRetrofit().create(UserServices::class.java)
 }
