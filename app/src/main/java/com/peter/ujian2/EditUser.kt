@@ -6,16 +6,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import com.peter.ujian2.viewmodel.UserViewModel
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
+import com.peter.ujian2.viewmodel.FileViewModel
 
 class EditUser : AppCompatActivity() {
 
-    private lateinit var viewModel: UserViewModel
+    private lateinit var viewModel: FileViewModel
     private lateinit var editTextNama: EditText
     private lateinit var editTextAlamat: EditText
     private lateinit var editTextHutang: EditText
@@ -43,7 +39,7 @@ class EditUser : AppCompatActivity() {
         editTextHutang.setText(intent.getStringExtra("USER_HUTANG"))
 
         // Inisialisasi ViewModel
-        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(FileViewModel::class.java)
 
         // Set listener untuk tombol update
         btnUpdate.setOnClickListener {

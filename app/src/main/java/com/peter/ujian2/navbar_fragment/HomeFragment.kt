@@ -1,6 +1,5 @@
 package com.peter.ujian2.navbar_fragment
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,13 +27,13 @@ import com.peter.ujian2.R
 import com.peter.ujian2.adapter.LoadStateAdapter
 import com.peter.ujian2.adapter.UserPagingAdapter
 import com.peter.ujian2.model.UserItem
-import com.peter.ujian2.viewmodel.UserViewModel
+import com.peter.ujian2.viewmodel.FileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
-    private lateinit var viewModel: UserViewModel
+    private lateinit var viewModel: FileViewModel
     private lateinit var lstUser: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var editTextSearch: EditText
@@ -80,7 +79,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(FileViewModel::class.java)
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.pagingDataFlow.collectLatest { pagingData ->
                 userPagingAdapter.submitData(pagingData)

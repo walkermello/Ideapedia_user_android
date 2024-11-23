@@ -29,18 +29,17 @@
         android:background="@drawable/rounded_background_login"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Login title -->
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
             android:layout_marginBottom="10dp"
-            android:text="LOGIN"
-            android:textSize="40dp"
-            android:textStyle="bold" />
+            app:srcCompat="@drawable/idepedia_black" />
 
         <!-- Username input -->
         <EditText

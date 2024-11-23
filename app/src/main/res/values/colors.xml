@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="submit">#F0D39D</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#4CAF50</color> <!-- warna hijau -->
+    <color name="red">#F44336</color>   <!-- warna merah -->
+    <color name="blue">#2196F3</color>  <!-- warna biru -->
     <color name="colorAccent">#FF4081</color> <!-- Contoh warna accent -->
     <color name="background_color">#F1E6Cf</color>
     <color name="login_background_color">#FAF6D4</color>

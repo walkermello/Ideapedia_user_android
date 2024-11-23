@@ -19,13 +19,12 @@ import com.peter.ujian2.services.ResponseServices
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
+class FileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _post = MutableLiveData<ResponseServices>()
     val post: LiveData<ResponseServices> get() = _post

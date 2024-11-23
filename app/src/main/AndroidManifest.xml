@@ -30,7 +30,7 @@
             android:name=".EditUser"
             android:exported="false" />
         <activity
-            android:name=".AddUser"
+            android:name=".AddFiles"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

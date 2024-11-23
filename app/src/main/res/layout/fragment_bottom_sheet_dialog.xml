@@ -202,9 +202,10 @@
             android:id="@+id/closeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Close"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/colorAccent"
-            android:textColor="@android:color/white" />
+            android:backgroundTint="@color/black"
+            android:text="Close"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

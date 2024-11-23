@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.paging.runtime)
+    implementation(libs.google.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnAdd.setOnClickListener {
-            val intent = Intent(this, AddUser::class.java) // Ganti AddDataActivity dengan nama activity yang sesuai
+            val intent = Intent(this, AddFiles::class.java) // Ganti AddDataActivity dengan nama activity yang sesuai
             startActivity(intent)
         }
     }
