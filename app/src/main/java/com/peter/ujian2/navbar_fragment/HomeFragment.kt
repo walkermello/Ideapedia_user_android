@@ -2,6 +2,7 @@ package com.peter.ujian2.navbar_fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
@@ -24,22 +24,24 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.peter.ujian2.R
+import com.peter.ujian2.adapter.FeedsPagingAdapter
 import com.peter.ujian2.adapter.LoadStateAdapter
-import com.peter.ujian2.adapter.UserPagingAdapter
-import com.peter.ujian2.model.UserItem
+import com.peter.ujian2.model.DetailIdea
+import com.peter.ujian2.model.Idea
 import com.peter.ujian2.viewmodel.FileViewModel
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private lateinit var viewModel: FileViewModel
-    private lateinit var lstUser: RecyclerView
+    private lateinit var lstIdea: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var editTextSearch: EditText
     private lateinit var constraintLayout: ConstraintLayout
     private lateinit var arrowBack: ImageView
-    private lateinit var userPagingAdapter: UserPagingAdapter
+    private lateinit var feedsPagingAdapter: FeedsPagingAdapter
 
     private val constraintSetExpanded = ConstraintSet()
     private val constraintSetCollapsed = ConstraintSet()
@@ -49,6 +51,10 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        // Initialize the ViewModel here
+        viewModel = ViewModelProvider(this).get(FileViewModel::class.java)
+
         initViews(view)
         setupRecyclerView()
         setupViewModel()
@@ -59,7 +65,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initViews(view: View) {
-        lstUser = view.findViewById(R.id.lstUser)
+        lstIdea = view.findViewById(R.id.lstIdea)
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         editTextSearch = view.findViewById(R.id.editTextSearch)
         constraintLayout = view.findViewById(R.id.main)
@@ -73,30 +79,35 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        userPagingAdapter = UserPagingAdapter { userItem -> showUserDetailsBottomSheet(userItem) }
-        lstUser.layoutManager = LinearLayoutManager(requireContext())
-        lstUser.adapter = userPagingAdapter.withLoadStateFooter(LoadStateAdapter { userPagingAdapter.retry() })
+        feedsPagingAdapter = FeedsPagingAdapter { idea -> showUserDetailsBottomSheet(idea) }
+        lstIdea.layoutManager = LinearLayoutManager(requireContext())
+        lstIdea.adapter = feedsPagingAdapter.withLoadStateFooter(LoadStateAdapter { feedsPagingAdapter.retry() })
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider(this).get(FileViewModel::class.java)
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.pagingDataFlow.collectLatest { pagingData ->
-                userPagingAdapter.submitData(pagingData)
+                if (pagingData != null) {
+                    feedsPagingAdapter.submitData(pagingData)
+                } else {
+                    Log.e("HomeFragment", "No data received.")
+                }
             }
         }
+
     }
 
     private fun setupSearchFunctionality() {
         editTextSearch.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) constraintSetCollapsed.applyTo(constraintLayout)
+            else constraintSetExpanded.applyTo(constraintLayout)
         }
 
         editTextSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = editTextSearch.text.toString().trim()
                 if (query.isNotEmpty()) {
-                    viewModel.searchUserByName(query)
+                    viewModel.updateSearchQuery(query) // Ensure this method is public
                 } else {
                     Toast.makeText(requireContext(), "Masukkan teks untuk pencarian", Toast.LENGTH_SHORT).show()
                 }
@@ -116,13 +127,13 @@ class HomeFragment : Fragment() {
         swipeRefreshLayout.setOnRefreshListener {
             editTextSearch.setText("")
             viewModel.updateSearchQuery(null)
-            userPagingAdapter.refresh()
+            feedsPagingAdapter.refresh()
             swipeRefreshLayout.isRefreshing = false
         }
     }
 
     private fun observeLoadState() {
-        userPagingAdapter.addLoadStateListener { loadState ->
+        feedsPagingAdapter.addLoadStateListener { loadState ->
             swipeRefreshLayout.isRefreshing = loadState.source.refresh is LoadState.Loading
             if (loadState.source.refresh is LoadState.Error) {
                 Toast.makeText(requireContext(), "Gagal memuat data", Toast.LENGTH_SHORT).show()
@@ -135,29 +146,7 @@ class HomeFragment : Fragment() {
         imm.hideSoftInputFromWindow(editTextSearch.windowToken, 0)
     }
 
-    private fun showDeleteDialog(item: UserItem) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.activity_delete_user, null)
-        val btnDelete = dialogView.findViewById<Button>(R.id.btnDelete)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        btnDelete.setOnClickListener {
-            item.id?.toIntOrNull()?.let { userId ->
-                viewModel.deleteUser(userId)
-                dialog.dismiss()
-                userPagingAdapter.refresh()
-            } ?: Toast.makeText(requireContext(), "ID pengguna tidak valid", Toast.LENGTH_SHORT).show()
-        }
-
-        btnCancel.setOnClickListener { dialog.dismiss() }
-
-        dialog.show()
-    }
-
-    private fun showUserDetailsBottomSheet(userItem: UserItem) {
+    private fun showUserDetailsBottomSheet(detailIdea: DetailIdea) {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val dialogView = layoutInflater.inflate(R.layout.fragment_bottom_sheet_dialog, null)
 
@@ -166,9 +155,19 @@ class HomeFragment : Fragment() {
         val txtDescription = dialogView.findViewById<TextView>(R.id.txtPostDetailDescription)
         val txtFeedback = dialogView.findViewById<TextView>(R.id.txtPostDetailFeedback)
 
-        userNameTextView.text = userItem.nama
-        txtDescription.text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-        txtFeedback.text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+        userNameTextView.text = detailIdea.idea.user.username
+        if (!detailIdea.idea.fileImage.isNullOrEmpty()) {
+            Picasso.get()
+                .load(detailIdea.idea.fileImage)
+                .placeholder(R.drawable.pdf_img)
+                .error(R.drawable.pdf_img)
+                .into(userImageView)
+        } else {
+            userImageView.setImageResource(R.drawable.pdf_img)
+        }
+
+        txtDescription.text = detailIdea.idea.deskripsi
+        txtFeedback.text = detailIdea.idea.feedback ?: "No feedback provided"
 
         dialogView.findViewById<Button>(R.id.closeButton).setOnClickListener {
             bottomSheetDialog.dismiss()
@@ -177,14 +176,5 @@ class HomeFragment : Fragment() {
         bottomSheetDialog.setContentView(dialogView)
         bottomSheetDialog.show()
     }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) = HomeFragment().apply {
-            arguments = Bundle().apply {
-                putString("param1", param1)
-                putString("param2", param2)
-            }
-        }
-    }
 }
+

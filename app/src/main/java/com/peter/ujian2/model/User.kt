@@ -3,42 +3,44 @@ package com.peter.ujian2.model
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import java.time.LocalDateTime
 
 @Parcelize
 data class User(
+	@SerializedName("id")
+	val id: Long? = null,
 
-	@field:SerializedName("total")
-	val total: Int? = null,
+	@SerializedName("username")
+	val username: String,
 
-	@field:SerializedName("data")
-	val data: Data? = null,
+	@SerializedName("nip")
+	val nip: String,
 
-	@field:SerializedName("message")
-	val message: String? = null,
+	@SerializedName("email")
+	val email: String,
 
-	@field:SerializedName("status")
-	val status: Boolean? = null
-) : Parcelable
+	@SerializedName("password")
+	val password: String,
 
-@Parcelize
-data class UserItem(
+	@SerializedName("noHp")
+	val noHp: String,
 
-	@field:SerializedName("nama")
-	val nama: String? = null,
+	@SerializedName("img_profile")
+	val imgProfile: String? = null,
 
-	@field:SerializedName("id")
-	val id: String? = null,
+	@SerializedName("unit_kerja")  // Menyesuaikan dengan nama objek di JSON
+	val unitKerja: UnitKerja? = null,
 
-	@field:SerializedName("hutang")
-	val hutang: Int? = null,
+	// Pastikan menggunakan tipe yang sesuai atau konverter khusus untuk LocalDateTime
+	@SerializedName("createdAt")
+	val createdAt: LocalDateTime? = null, // bisa String jika tidak menggunakan konverter khusus
 
-	@field:SerializedName("alamat")
-	val alamat: String? = null
-) : Parcelable
+	@SerializedName("createdBy")
+	val createdBy: Long? = null,
 
-@Parcelize
-data class Data(
+	@SerializedName("modifiedAt")
+	val modifiedAt: LocalDateTime? = null, // bisa String jika tidak menggunakan konverter khusus
 
-	@field:SerializedName("ujian")
-	val newUser: List<UserItem?>? = null
+	@SerializedName("modifiedBy")
+	val modifiedBy: Long? = null
 ) : Parcelable

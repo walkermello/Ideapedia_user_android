@@ -4,121 +4,133 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.peter.ujian2.viewmodel.FileViewModel
+import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
-
+import java.io.File
 
 class AddFiles : AppCompatActivity() {
     private lateinit var etTitle: TextInputEditText
     private lateinit var etDescription: TextInputEditText
     private lateinit var tvFileName: TextView
+    private lateinit var previewImage: ImageView
     private lateinit var btnChooseFile: MaterialButton
     private lateinit var btnSubmit: MaterialButton
-    private lateinit var btnBack: ImageView
     private var selectedFileUri: Uri? = null
+    private var selectedImageUri: Uri? = null
 
-    //inisiasi pembuatan acc user baru
     private val viewModel: FileViewModel by viewModels()
-
-    fun initComponent(){
-        enableEdgeToEdge()
-        etTitle = findViewById(R.id.etTitle)
-        etDescription = findViewById(R.id.etDescription)
-        tvFileName = findViewById(R.id.tvFileName)
-        btnChooseFile = findViewById(R.id.btnChooseFile)
-        btnSubmit = findViewById(R.id.btnSubmit)
-        btnBack = findViewById(R.id.btnBack)
-
-        //btnChooseFile.setOnClickListener { chooseFile() }
-        //btnSubmit.setOnClickListener { submitData() }
-
-        // Set up the back button click listener
-        btnBack.setOnClickListener {
-            super.onBackPressed()
-        }
-    }
-
-
-//    private fun chooseFile() {
-//        val intent = Intent(Intent.ACTION_GET_CONTENT)
-//        intent.type = "*/*"
-//        startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
-//    }
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (requestCode == REQUEST_CODE_PICK_FILE && resultCode == Activity.RESULT_OK) {
-//            selectedFileUri = data?.data
-//            selectedFileUri?.let { tvFileName.text = getFileName(it) }
-//        }
-//    }
-
-//    private fun getFileName(uri: Uri): String {
-//        var fileName = "Unknown"
-//        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-//            if (cursor.moveToFirst()) {
-//                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-//            }
-//        }
-//        return fileName
-//    }
-
-//    fun submitData(){
-//
-//        val title = etTitle.text.toString()
-//        val description = etDescription.text.toString()
-//
-//        if (title.isEmpty() || description.isEmpty() || selectedFileUri == null) {
-//            Toast.makeText(this, "Please fill all fields and choose a file", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        if (title.isNotEmpty() && description.isNotEmpty() && selectedFileUri.isNotEmpty()){
-//
-//            // Menggunakan metode terbaru untuk RequestBody
-//            val rbTitle = RequestBody.create("text/plain".toMediaTypeOrNull(), title)
-//            val rbDescription = RequestBody.create("text/plain".toMediaTypeOrNull(), description)
-//            val rbSelectedFileUri = RequestBody.create("text/plain".toMediaTypeOrNull(), selectedFileuri.toString())
-//
-//            viewModel.postUser(rbTitle, rbDescription, rbSelectedFileUri)
-//        }else{
-//            Toast.makeText(this, "Data belum lengkap", Toast.LENGTH_SHORT).show()
-//        }
-//
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
-        // Inisialisasi komponen UI
+
         initComponent()
+        observeViewModel()
+    }
 
-        // Mengamati hasil _post dari viewModel
-        viewModel.post.observe(this) { response ->
-            if (response != null && response.status == true) {
-                finish() // Menutup activity setelah berhasil
-            } else {
-                Toast.makeText(this, "Failed to Upload Data", Toast.LENGTH_SHORT).show()
+    private fun initComponent() {
+        etTitle = findViewById(R.id.etTitle)
+        etDescription = findViewById(R.id.etDescription)
+        tvFileName = findViewById(R.id.tvFileName)
+        previewImage = findViewById(R.id.previewImage)
+        btnChooseFile = findViewById(R.id.btnChooseFile)
+        btnSubmit = findViewById(R.id.btnSubmit)
+
+        // Menambahkan click listener pada btnChooseFile hanya untuk memilih file
+        btnChooseFile.setOnClickListener { chooseFile() }
+
+        // Menambahkan click listener pada previewImage untuk memilih gambar
+        previewImage.setOnClickListener { chooseImage() }
+
+        btnSubmit.setOnClickListener { submitData() }
+    }
+
+    private fun chooseFile() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        val mimeTypes = arrayOf("application/pdf", "application/vnd.ms-powerpoint")
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+        startActivityForResult(Intent.createChooser(intent, "Pilih File"), 100)
+    }
+
+    private fun chooseImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        startActivityForResult(Intent.createChooser(intent, "Pilih Gambar"), 101)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            val uri = data?.data
+            uri?.let {
+                if (requestCode == 100) {
+                    // File dipilih
+                    selectedFileUri = it
+                    tvFileName.text = "File Dipilih"
+                } else if (requestCode == 101) {
+                    // Gambar dipilih
+                    selectedImageUri = it
+                    Picasso.get().load(it).into(previewImage)
+                    tvFileName.text = "Gambar Dipilih"
+                }
             }
         }
+    }
 
-        viewModel.post.observe(this){
-            if (it.status == true){
-                finish()
+    private fun submitData() {
+        val title = etTitle.text.toString()
+        val description = etDescription.text.toString()
+
+        if (title.isBlank() || description.isBlank() || (selectedFileUri == null && selectedImageUri == null)) {
+            Toast.makeText(this, "Harap isi semua kolom dan pilih file/gambar", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val titleBody = RequestBody.create("text/plain".toMediaTypeOrNull(), title)
+        val descriptionBody = RequestBody.create("text/plain".toMediaTypeOrNull(), description)
+
+        var filePart: MultipartBody.Part? = null
+        selectedFileUri?.let {
+            val file = File(getRealPathFromURI(it))
+            val requestBody = RequestBody.create("application/pdf".toMediaTypeOrNull(), file)
+            filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
+        }
+
+        var imagePart: MultipartBody.Part? = null
+        selectedImageUri?.let {
+            val file = File(getRealPathFromURI(it))
+            val requestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+            imagePart = MultipartBody.Part.createFormData("image", file.name, requestBody)
+        }
+
+        viewModel.uploadFile(titleBody, descriptionBody, filePart, imagePart)
+    }
+
+    private fun observeViewModel() {
+        viewModel.uploadStatus.observe(this) { status ->
+            // Menampilkan status sebagai String
+            Toast.makeText(this, status.name, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getRealPathFromURI(uri: Uri): String {
+        val file = File(cacheDir, "tempfile")
+        contentResolver.openInputStream(uri)?.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
             }
         }
+        return file.absolutePath
     }
 }

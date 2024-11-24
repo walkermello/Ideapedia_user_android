@@ -47,7 +47,6 @@
         </LinearLayout>
     </LinearLayout>
 
-
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
@@ -104,6 +103,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Nama File yang Dipilih -->
+            <ImageView
+                android:id="@+id/previewImage"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="16dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/background" />
+
             <TextView
                 android:id="@+id/tvFileName"
                 android:layout_width="match_parent"
@@ -112,6 +120,9 @@
                 android:text="No file selected"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?attr/colorOnSurface" />
+
+            <!-- Preview Image -->
+            <!-- Placeholder image for preview -->
 
             <!-- Tombol Pilih File -->
             <com.google.android.material.button.MaterialButton

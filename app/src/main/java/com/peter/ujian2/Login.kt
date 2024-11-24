@@ -43,18 +43,25 @@ class Login : AppCompatActivity() {
 
     private fun login(username: String, password: String) {
         val request = LoginRequest(username, password)
-        val authService = NetworkConfig().getAuthService()
+        // Menambahkan context pada NetworkConfig
+        val authService = NetworkConfig(this).getAuthService()
 
         authService.login(request).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
                     val token = response.body()?.token
-                    Toast.makeText(this@Login, "Login Successful!", Toast.LENGTH_SHORT).show()
+                    if (token != null) {
+                        // Menyimpan token setelah login berhasil
+                        saveToken(token)
 
-                    val intent = Intent(this@Login, MainActivity::class.java)
-                    intent.putExtra("TOKEN", token) // Kirim token jika perlu
-                    startActivity(intent)
-                    finish()
+                        Toast.makeText(this@Login, "Login Successful!", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent(this@Login, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this@Login, "Token not found!", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(
                         this@Login,
@@ -68,5 +75,13 @@ class Login : AppCompatActivity() {
                 Toast.makeText(this@Login, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    // Menyimpan token ke SharedPreferences
+    private fun saveToken(token: String) {
+        val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("bearer_token", token)
+        editor.apply()
     }
 }
