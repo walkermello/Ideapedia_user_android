@@ -169,8 +169,18 @@ class HomeFragment : Fragment() {
         txtDescription.text = detailIdea.idea.deskripsi
         txtFeedback.text = detailIdea.idea.feedback ?: "No feedback provided"
 
-        dialogView.findViewById<Button>(R.id.closeButton).setOnClickListener {
-            bottomSheetDialog.dismiss()
+        dialogView.findViewById<Button>(R.id.btnDownload).setOnClickListener {
+            val fileId = detailIdea.idea.id.toString() // Ambil ID file dari detailIdea
+            viewModel.downloadFile(fileId) { success, message ->  // Hanya dua parameter yang dibutuhkan
+                if (success) {
+                    // Tampilkan path file
+                    Log.d("Download", "Download berhasil, file disimpan di: $message") // Message berisi path
+                    Toast.makeText(requireContext(), "Download berhasil: $message", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("Download", "Download gagal: $message")
+                    Toast.makeText(requireContext(), "Download gagal: $message", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         bottomSheetDialog.setContentView(dialogView)

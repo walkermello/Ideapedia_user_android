@@ -1,7 +1,10 @@
 package com.peter.ujian2.viewmodel
 
 import android.app.Application
+import android.content.ContentValues
 import android.content.Context.MODE_PRIVATE
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -28,6 +31,8 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import retrofit2.Retrofit
+import java.io.File
+import java.io.FileOutputStream
 
 class FileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -95,10 +100,6 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                     _uploadStatus.postValue(UploadStatus.SUCCESS)
                     Log.d("FileViewModel", "Upload berhasil")
                 } else {
-                    // Tangani status HTTP 401 jika token kadaluarsa atau tidak valid
-                    if (response.code() == 401) {
-                        Log.e("FileViewModel", "Token kadaluarsa, harap login kembali.")
-                    }
                     _uploadStatus.postValue(UploadStatus.ERROR)
                     Log.e("FileViewModel", "Upload gagal: ${response.message()}")
                 }
@@ -136,6 +137,48 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 callback(UploadStatus.ERROR, e.message)
+            }
+        }
+    }
+
+    fun downloadFile(fileId: String, callback: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = ideaServices.downloadFile(fileId) // Pastikan API mengembalikan nama file
+                if (response.isSuccessful) {
+                    val inputStream = response.body()?.byteStream()
+                    val fileName = response.headers()["Content-Disposition"]?.let { disposition ->
+                        Regex("filename=\"(.*)\"").find(disposition)?.groupValues?.get(1)
+                    } ?: "file_$fileId.pdf" // Gunakan nama default jika nama file tidak tersedia
+
+                    if (inputStream != null) {
+                        // Tentukan folder penyimpanan di Downloads
+                        val downloadsDir = File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            "my_app"
+                        )
+                        if (!downloadsDir.exists()) {
+                            downloadsDir.mkdirs()
+                        }
+
+                        // Simpan file dengan nama dari server
+                        val file = File(downloadsDir, fileName)
+                        val outputStream = FileOutputStream(file)
+
+                        // Menyalin data dari input stream ke file
+                        inputStream.copyTo(outputStream)
+                        outputStream.close()
+
+                        // Memastikan file sudah disalin dengan sukses
+                        callback(true, "Download sukses! Lokasi file: ${file.absolutePath}")
+                    } else {
+                        callback(false, "File tidak ditemukan.")
+                    }
+                } else {
+                    callback(false, response.message())
+                }
+            } catch (e: Exception) {
+                callback(false, e.message)
             }
         }
     }

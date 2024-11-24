@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <!-- Header Layout -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -109,42 +110,47 @@
                 android:layout_height="200dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="16dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/background" />
+                android:src="@drawable/image_upload"
+                android:background="@drawable/border_image" />/>
 
             <TextView
                 android:id="@+id/tvFileName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
                 android:text="No file selected"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurface" />
-
-            <!-- Preview Image -->
-            <!-- Placeholder image for preview -->
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" /> <!-- Mengubah text menjadi bold -->
 
             <!-- Tombol Pilih File -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnChooseFile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/black"
-                android:text="Choose File"
-                android:textStyle="bold" />
 
             <!-- Tombol Submit -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSubmit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:backgroundTint="@color/submit"
-                android:text="Submit"
-                android:textColor="#000000"
-                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnChooseFile"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/black"
+        android:text="Choose File"
+        android:textStyle="bold" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmit"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="30dp"
+        android:backgroundTint="@color/submit"
+        android:text="Submit"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
 </LinearLayout>

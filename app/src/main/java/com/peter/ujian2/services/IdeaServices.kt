@@ -4,6 +4,7 @@ import com.peter.ujian2.model.ApiResponseDetailIdea
 import com.peter.ujian2.model.ApiResponseIdea
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -66,4 +67,7 @@ interface IdeaServices {
         @Part file: MultipartBody.Part?,
         @Part image: MultipartBody.Part?
     ): Response<ResponseServices>
+
+    @GET("idea/download/{fileId}")
+    suspend fun downloadFile(@Path("fileId") fileId: String): Response<ResponseBody>
 }

@@ -197,15 +197,15 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Button Close -->
+        <!-- Button Download -->
         <Button
-            android:id="@+id/closeButton"
+            android:id="@+id/btnDownload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/black"
-            android:text="Close"
-            android:textColor="@android:color/white"
+            android:backgroundTint="@color/submit"
+            android:text="Download"
+            android:textColor="@android:color/black"
             android:textStyle="bold" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

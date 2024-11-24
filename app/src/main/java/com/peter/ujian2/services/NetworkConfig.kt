@@ -16,12 +16,12 @@ import java.time.format.DateTimeFormatter
 
 class NetworkConfig(private val context: Context) {
 
-    // Gson setup for parsing dates
     private val gson = GsonBuilder()
         .registerTypeAdapter(LocalDateTime::class.java, JsonDeserializer { json: JsonElement, _, _ ->
             try {
                 val dateString = json.asString
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+                // Menggunakan formatter ISO yang lebih fleksibel
+                val formatter = DateTimeFormatter.ISO_DATE_TIME
                 LocalDateTime.parse(dateString, formatter)
             } catch (e: Exception) {
                 e.printStackTrace()

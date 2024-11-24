@@ -1,18 +1,23 @@
 package com.peter.ujian2.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.peter.ujian2.R
+import com.peter.ujian2.viewmodel.FileViewModel
 
 class FeedsBottomSheetDialogFragment : BottomSheetDialogFragment() {
+
+    private lateinit var fileViewModel: FileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,10 +29,13 @@ class FeedsBottomSheetDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inisialisasi ViewModel
+        fileViewModel = ViewModelProvider(requireActivity()).get(FileViewModel::class.java)
+
         val postImageViewDetail: ImageView = view.findViewById(R.id.imgPostDetail)
         val postDescriptionTextView: TextView = view.findViewById(R.id.txtPostDetailDescription)
         val feedbackTextView: TextView = view.findViewById(R.id.txtPostDetailFeedback)
-        val closeButton: Button = view.findViewById(R.id.closeButton)
+        val btnDownload: Button = view.findViewById(R.id.btnDownload)
 
         dialog?.setOnShowListener { dialog ->
             val bottomSheet = (dialog as BottomSheetDialog).findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
@@ -49,10 +57,6 @@ class FeedsBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     }
                 })
             }
-        }
-
-        closeButton.setOnClickListener {
-            dismiss()
         }
     }
 

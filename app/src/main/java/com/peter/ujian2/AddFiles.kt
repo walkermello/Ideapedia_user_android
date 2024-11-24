@@ -1,34 +1,46 @@
 package com.peter.ujian2
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.peter.ujian2.viewmodel.FileViewModel
-import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.io.FileOutputStream
 
 class AddFiles : AppCompatActivity() {
+
     private lateinit var etTitle: TextInputEditText
     private lateinit var etDescription: TextInputEditText
     private lateinit var tvFileName: TextView
     private lateinit var previewImage: ImageView
     private lateinit var btnChooseFile: MaterialButton
     private lateinit var btnSubmit: MaterialButton
+    private lateinit var btnBack: ImageView
     private var selectedFileUri: Uri? = null
     private var selectedImageUri: Uri? = null
 
     private val viewModel: FileViewModel by viewModels()
+
+    // Launchers for file and image selection
+    private val chooseFileLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { handleFileSelection(it) }
+    }
+
+    private val chooseImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { handleImageSelection(it) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,47 +57,65 @@ class AddFiles : AppCompatActivity() {
         previewImage = findViewById(R.id.previewImage)
         btnChooseFile = findViewById(R.id.btnChooseFile)
         btnSubmit = findViewById(R.id.btnSubmit)
+        btnBack = findViewById(R.id.btnBack)
 
-        // Menambahkan click listener pada btnChooseFile hanya untuk memilih file
         btnChooseFile.setOnClickListener { chooseFile() }
-
-        // Menambahkan click listener pada previewImage untuk memilih gambar
         previewImage.setOnClickListener { chooseImage() }
-
         btnSubmit.setOnClickListener { submitData() }
+        btnBack.setOnClickListener { onBackPressed() }
     }
 
     private fun chooseFile() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "*/*"
-        val mimeTypes = arrayOf("application/pdf", "application/vnd.ms-powerpoint")
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-        startActivityForResult(Intent.createChooser(intent, "Pilih File"), 100)
+        chooseFileLauncher.launch("application/*")
     }
 
     private fun chooseImage() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        startActivityForResult(Intent.createChooser(intent, "Pilih Gambar"), 101)
+        chooseImageLauncher.launch("image/*")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            val uri = data?.data
-            uri?.let {
-                if (requestCode == 100) {
-                    // File dipilih
-                    selectedFileUri = it
-                    tvFileName.text = "File Dipilih"
-                } else if (requestCode == 101) {
-                    // Gambar dipilih
-                    selectedImageUri = it
-                    Picasso.get().load(it).into(previewImage)
-                    tvFileName.text = "Gambar Dipilih"
+    private fun handleFileSelection(uri: Uri) {
+        val mimeType = contentResolver.getType(uri)
+        if (mimeType in listOf(
+                "application/pdf",
+                "application/vnd.ms-powerpoint",
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            )
+        ) {
+            selectedFileUri = uri
+            tvFileName.text = getFileNameFromUri(uri)
+        } else {
+            Toast.makeText(this, "Hanya file PDF atau PPT yang didukung.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleImageSelection(uri: Uri) {
+        selectedImageUri = uri
+        previewImage.setImageURI(uri)
+    }
+
+    private fun getFileNameFromUri(uri: Uri): String {
+        var fileName = "Nama file tidak ditemukan"
+        if (uri.scheme == "content") {
+            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
+                if (it.moveToFirst()) {
+                    fileName = it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
                 }
             }
+        } else if (uri.scheme == "file") {
+            fileName = uri.lastPathSegment ?: fileName
         }
+        return fileName
+    }
+
+    private fun getRealPathFromURI(uri: Uri): File {
+        val fileName = getFileNameFromUri(uri)
+        val file = File(cacheDir, fileName)
+        contentResolver.openInputStream(uri)?.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return file
     }
 
     private fun submitData() {
@@ -102,15 +132,20 @@ class AddFiles : AppCompatActivity() {
 
         var filePart: MultipartBody.Part? = null
         selectedFileUri?.let {
-            val file = File(getRealPathFromURI(it))
+            val file = getRealPathFromURI(it)
             val requestBody = RequestBody.create("application/pdf".toMediaTypeOrNull(), file)
             filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
         }
 
         var imagePart: MultipartBody.Part? = null
         selectedImageUri?.let {
-            val file = File(getRealPathFromURI(it))
-            val requestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+            val file = getRealPathFromURI(it)
+            val mimeType = contentResolver.getType(it)
+            val requestBody = when (mimeType) {
+                "image/jpeg" -> RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                "image/png" -> RequestBody.create("image/png".toMediaTypeOrNull(), file)
+                else -> throw IllegalArgumentException("Tipe file tidak valid")
+            }
             imagePart = MultipartBody.Part.createFormData("image", file.name, requestBody)
         }
 
@@ -119,18 +154,20 @@ class AddFiles : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.uploadStatus.observe(this) { status ->
-            // Menampilkan status sebagai String
             Toast.makeText(this, status.name, Toast.LENGTH_SHORT).show()
+            if (status == FileViewModel.UploadStatus.SUCCESS) {
+                finish()
+            }
         }
     }
 
-    private fun getRealPathFromURI(uri: Uri): String {
-        val file = File(cacheDir, "tempfile")
-        contentResolver.openInputStream(uri)?.use { input ->
-            file.outputStream().use { output ->
-                input.copyTo(output)
+    private fun cacheFileFromUri(uri: Uri): File {
+        val file = File(cacheDir, "cached_file_${System.currentTimeMillis()}")
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+            FileOutputStream(file).use { outputStream ->
+                inputStream.copyTo(outputStream)
             }
         }
-        return file.absolutePath
+        return file
     }
 }

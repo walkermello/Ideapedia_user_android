@@ -51,7 +51,6 @@ class FeedsPagingAdapter(private val itemClickListener: (DetailIdea) -> Unit) : 
 
         fun bind(detailIdea: DetailIdea, itemClickListener: (DetailIdea) -> Unit) {
 
-
             // Membuat URL dinamis berdasarkan id user
             val userId = detailIdea.idea.user.id ?: 1 // Jika id user tidak ada, fallback ke id default (misalnya 1)
             val imgUser = "${Constants.BASE_URL}user/image/$userId" // URL dinamis untuk gambar berdasarkan id pengguna
