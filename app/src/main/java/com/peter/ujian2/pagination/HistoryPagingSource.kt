@@ -1,21 +1,21 @@
+package com.peter.ujian2.pagination
+
 import android.content.Context
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.peter.ujian2.model.DetailIdea
-import com.peter.ujian2.model.Idea
+import com.peter.ujian2.model.HistoryItem  // Assuming HistoryItem is the correct model
 import com.peter.ujian2.services.IdeaServices
 import retrofit2.HttpException
 import java.io.IOException
 
-class BookmarkPagingSource(
+class HistoryPagingSource(
     private val ideaService: IdeaServices,  // Konstruktornya
-    private val userId: Long,  // Menambahkan userId untuk mendapatkan bookmark berdasarkan user
-    private val context: Context, // Menambahkan context untuk SharedPreferences
-    private var searchQuery: String? = null // Query pencarian jika ada
-) : PagingSource<Long, Idea>() {  // Ubah dari DetailIdea menjadi Idea
+    private val userId: Long,  // Menambahkan userId untuk mendapatkan history berdasarkan user
+    private val context: Context  // Menambahkan context untuk SharedPreferences
+) : PagingSource<Long, HistoryItem>() {  // Change to HistoryItem
 
-    override suspend fun load(params: LoadParams<Long>): LoadResult<Long, Idea> {
+    override suspend fun load(params: LoadParams<Long>): LoadResult<Long, HistoryItem> {
         val start = params.key ?: 0L  // Mulai dari halaman pertama jika null
         val limit = params.loadSize  // Jumlah item per halaman
 
@@ -24,19 +24,26 @@ class BookmarkPagingSource(
             val token = getToken()
             Log.d("API Request", "Calling getHistory with userId: $userId and token: $token")
             // Jika token ada, tambahkan ke header
-            val response = ideaService.getBookmarkIdea(userId, "Bearer $token")
+            val response = ideaService.getHistory(userId, "Bearer $token")
 
             if (response.isSuccessful) {
-                // Mengakses array langsung, tidak ada field `content`
-                val bookmarkData = response.body() ?: emptyList() // Respons berupa array Bookmark
+                // Mengakses data 'history' jika respons berhasil
+                val historyData = response.body() ?: emptyList() // Replace with correct response format
 
-                // Mengambil hanya field `idea` yang berisi data Idea langsung
-                val ideaData = bookmarkData.map { it.idea }  // Map Bookmark ke Idea (mengambil field `idea`)
+                // Map the history data to a list of HistoryItem
+                val historyItems = historyData.map { HistoryItem(
+                    id = it.id,
+                    date = it.createdAt,
+                    title = it.idea.judul,
+                    profile = it.user.username,
+                    action = it.action,
+                    status = "completed"  // Adjust as necessary based on your data
+                ) }
 
                 LoadResult.Page(
-                    data = ideaData,  // Menggunakan data Idea langsung
+                    data = historyItems,  // Menggunakan data HistoryItem
                     prevKey = if (start == 0L) null else start - limit,
-                    nextKey = if (ideaData.size < limit) null else start + limit
+                    nextKey = if (historyItems.size < limit) null else start + limit
                 )
             } else {
                 LoadResult.Error(HttpException(response))
@@ -54,14 +61,8 @@ class BookmarkPagingSource(
         return sharedPreferences.getString("bearer_token", null)
     }
 
-    // Fungsi untuk memperbarui query pencarian
-    fun setSearchQuery(query: String?) {
-        searchQuery = query
-        invalidate() // Memicu refresh data
-    }
-
     // Menentukan halaman refresh
-    override fun getRefreshKey(state: PagingState<Long, Idea>): Long? {
+    override fun getRefreshKey(state: PagingState<Long, HistoryItem>): Long? {
         return state.anchorPosition?.let { anchor ->
             state.closestPageToPosition(anchor)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchor)?.nextKey?.minus(1)

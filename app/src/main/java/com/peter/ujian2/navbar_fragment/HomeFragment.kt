@@ -149,11 +149,28 @@ class HomeFragment : Fragment() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val dialogView = layoutInflater.inflate(R.layout.fragment_bottom_sheet_dialog, null)
 
-        val userNameTextView = dialogView.findViewById<TextView>(R.id.userNameTextView)
         val userImageView = dialogView.findViewById<ImageView>(R.id.imgPostDetail)
+        val txtTitle = dialogView.findViewById<TextView>(R.id.txtPostDetailTitle)
+        val userNameTextView = dialogView.findViewById<TextView>(R.id.userNameTextView)
+        val txtPenguji1 = dialogView.findViewById<TextView>(R.id.txtPenguji1)
+        val txtPenguji2 = dialogView.findViewById<TextView>(R.id.txtPenguji2)
+        val txtPenguji3 = dialogView.findViewById<TextView>(R.id.txtPenguji3)
         val txtDescription = dialogView.findViewById<TextView>(R.id.txtPostDetailDescription)
         val txtFeedback = dialogView.findViewById<TextView>(R.id.txtPostDetailFeedback)
 
+        txtTitle.text = detailIdea.idea.judul
+// Fetch the user names for penguji1, penguji2, and penguji3
+        viewModel.getUserById(detailIdea.idea.pengujiPertama) { userName ->
+            txtPenguji1.text = userName
+        }
+
+        viewModel.getUserById(detailIdea.idea.pengujiKedua) { userName ->
+            txtPenguji2.text = userName
+        }
+
+        viewModel.getUserById(detailIdea.idea.pengujiKetiga) { userName ->
+            txtPenguji3.text = userName
+        }
         userNameTextView.text = detailIdea.idea.user.username
         if (!detailIdea.idea.fileImage.isNullOrEmpty()) {
             Picasso.get()

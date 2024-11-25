@@ -86,6 +86,23 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("FileViewModel", "Query di ViewModel untuk username: $username")
     }
 
+    // In FileViewModel
+    fun getUserById(userId: Long, callback: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = ideaServices.getUserById(userId)
+                if (response.isSuccessful) {
+                    val username = response.body()?.username ?: "Unknown User"
+                    callback(username)
+                } else {
+                    callback("User not found")
+                }
+            } catch (e: Exception) {
+                callback("Error: ${e.message}")
+            }
+        }
+    }
+
     // Fungsi untuk mengupload file dengan status upload
     fun uploadFile(
         judul: RequestBody,

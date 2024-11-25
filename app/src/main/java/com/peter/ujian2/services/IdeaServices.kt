@@ -4,6 +4,8 @@ import com.peter.ujian2.model.ApiResponseDetailIdea
 import com.peter.ujian2.model.ApiResponseIdea
 import com.peter.ujian2.model.Bookmark
 import com.peter.ujian2.model.BookmarkListResponse
+import com.peter.ujian2.model.History
+import com.peter.ujian2.model.User
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -79,4 +81,13 @@ interface IdeaServices {
         @Path("userId") userId: Long,  // Menggunakan userId
         @Header("Authorization") authHeader: String  // Mengirim token Bearer
     ): Response<List<Bookmark>>  // Mengembalikan List<BookmarkListResponse>
+
+    @GET("user/{userId}")
+    suspend fun getUserById(@Path("userId") userId: Long): Response<User>
+
+    @GET("history/{userId}")
+    suspend fun getHistory(
+        @Path("userId") userId: Long,  // Menggunakan userId
+        @Header("Authorization") authHeader: String  // Mengirim token Bearer
+    ): Response<List<History>>
 }

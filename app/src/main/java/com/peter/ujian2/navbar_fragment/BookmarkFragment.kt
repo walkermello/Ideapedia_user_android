@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 
 class BookmarkFragment : Fragment() {
     private lateinit var viewModel: BookmarkViewModel
+    private lateinit var fileViewModel: FileViewModel
     private lateinit var lstIdea: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var editTextSearch: EditText
@@ -57,6 +58,7 @@ class BookmarkFragment : Fragment() {
 
         // Initialize ViewModel
         viewModel = ViewModelProvider(this).get(BookmarkViewModel::class.java)
+        fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
 
         // Setup RecyclerView
         lstIdea = view.findViewById(R.id.lstIdea)
@@ -137,15 +139,6 @@ class BookmarkFragment : Fragment() {
         }
     }
 
-    private fun setupSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener {
-            editTextSearch.setText("")
-            viewModel.updateSearchQuery(null)
-            bookmarkPagingAdapter.refresh()
-            swipeRefreshLayout.isRefreshing = false
-        }
-    }
-
     private fun observeLoadState() {
         bookmarkPagingAdapter.addLoadStateListener { loadState ->
             swipeRefreshLayout.isRefreshing = loadState.source.refresh is LoadState.Loading
@@ -164,11 +157,28 @@ class BookmarkFragment : Fragment() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val dialogView = layoutInflater.inflate(R.layout.fragment_bottom_sheet_dialog, null)
 
-        val userNameTextView = dialogView.findViewById<TextView>(R.id.userNameTextView)
         val userImageView = dialogView.findViewById<ImageView>(R.id.imgPostDetail)
+        val txtTitle = dialogView.findViewById<TextView>(R.id.txtPostDetailTitle)
+        val userNameTextView = dialogView.findViewById<TextView>(R.id.userNameTextView)
+        val txtPenguji1 = dialogView.findViewById<TextView>(R.id.txtPenguji1)
+        val txtPenguji2 = dialogView.findViewById<TextView>(R.id.txtPenguji2)
+        val txtPenguji3 = dialogView.findViewById<TextView>(R.id.txtPenguji3)
         val txtDescription = dialogView.findViewById<TextView>(R.id.txtPostDetailDescription)
         val txtFeedback = dialogView.findViewById<TextView>(R.id.txtPostDetailFeedback)
 
+        txtTitle.text = idea.judul
+// Fetch the user names for penguji1, penguji2, and penguji3
+        fileViewModel.getUserById(idea.pengujiPertama) { userName ->
+            txtPenguji1.text = userName
+        }
+
+        fileViewModel.getUserById(idea.pengujiKedua) { userName ->
+            txtPenguji2.text = userName
+        }
+
+        fileViewModel.getUserById(idea.pengujiKetiga) { userName ->
+            txtPenguji3.text = userName
+        }
         userNameTextView.text = idea.user.username
         if (!idea.fileImage.isNullOrEmpty()) {
             Picasso.get()
@@ -199,4 +209,5 @@ class BookmarkFragment : Fragment() {
         bottomSheetDialog.setContentView(dialogView)
         bottomSheetDialog.show()
     }
+
 }
