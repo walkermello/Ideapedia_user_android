@@ -2,11 +2,14 @@ package com.peter.ujian2.services
 
 import com.peter.ujian2.model.ApiResponseDetailIdea
 import com.peter.ujian2.model.ApiResponseIdea
+import com.peter.ujian2.model.Bookmark
+import com.peter.ujian2.model.BookmarkListResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -48,15 +51,12 @@ interface IdeaServices {
      */
     @GET("idea/{start}/{sort_order}/{sort_field}")
     suspend fun getIdeasByParams(
+        @Path("start") start: Int,
+        @Path("sort_order") sortOrder: String,
+        @Path("sort_field") sortField: String,
         @Query("size") size: Int = 5,
-        @Query("col") col: String,
-        @Query("val") value: String,
-        @Query("start") start: Int = 0,
-        @Query("sort_order") sortOrder: String = "asc",
-        @Query("sort_field") sortField: String = "id",
-        @Query("username") username: String? = null,
-        @Query("title") title: String? = null,
-        @Query("description") description: String? = null
+        @Query("col") col: String = "judul",
+        @Query("val") value: String
     ): Response<ApiResponseDetailIdea>
 
     @Multipart
@@ -70,4 +70,13 @@ interface IdeaServices {
 
     @GET("idea/download/{fileId}")
     suspend fun downloadFile(@Path("fileId") fileId: String): Response<ResponseBody>
+
+    @POST("bookmark/{ideaId}")
+    suspend fun bookmarkIdea(@Path("ideaId") ideaId: Int): Response<ResponseBody>
+
+    @GET("bookmark/{userId}")
+    suspend fun getBookmarkIdea(
+        @Path("userId") userId: Long,  // Menggunakan userId
+        @Header("Authorization") authHeader: String  // Mengirim token Bearer
+    ): Response<List<Bookmark>>  // Mengembalikan List<BookmarkListResponse>
 }

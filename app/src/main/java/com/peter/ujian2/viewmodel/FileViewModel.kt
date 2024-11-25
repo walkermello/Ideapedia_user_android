@@ -1,3 +1,4 @@
+
 package com.peter.ujian2.viewmodel
 
 import android.app.Application
@@ -137,6 +138,22 @@ class FileViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 callback(UploadStatus.ERROR, e.message)
+            }
+        }
+    }
+
+    // Function to bookmark an idea
+    fun addBookmark(ideaId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = ideaServices.bookmarkIdea(ideaId.toInt())  // Convert to Int as API expects Int
+                if (response.isSuccessful) {
+                    Log.d("BookmarkViewModel", "Idea bookmarked successfully!")
+                } else {
+                    Log.e("BookmarkViewModel", "Failed to bookmark idea: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("BookmarkViewModel", "Error bookmarking idea: ${e.message}")
             }
         }
     }

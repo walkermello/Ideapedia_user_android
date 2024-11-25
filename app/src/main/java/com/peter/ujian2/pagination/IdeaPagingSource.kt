@@ -28,17 +28,14 @@ class IdeaPagingSource(
                     size = limit
                 )
             } else {
-                val query = "%${searchQuery}%"
+                val query = searchQuery
                 ideaService.getIdeasByParams(
                     size = limit,
-                    col = "status",
-                    value = "Approved",
+                    col = "judul",
+                    value = "$query",
                     start = start,
                     sortOrder = sortOrder,
                     sortField = sortField,
-                    username = query,
-                    title = query,
-                    description = query
                 )
             }
 

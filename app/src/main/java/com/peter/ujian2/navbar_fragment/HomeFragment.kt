@@ -52,7 +52,6 @@ class HomeFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-        // Initialize the ViewModel here
         viewModel = ViewModelProvider(this).get(FileViewModel::class.java)
 
         initViews(view)
@@ -79,7 +78,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        feedsPagingAdapter = FeedsPagingAdapter { idea -> showUserDetailsBottomSheet(idea) }
+        // Pass FileViewModel to the adapter
+        feedsPagingAdapter = FeedsPagingAdapter(
+            itemClickListener = { idea -> showUserDetailsBottomSheet(idea) },
+            viewModel = viewModel // Pass FileViewModel here
+        )
+
         lstIdea.layoutManager = LinearLayoutManager(requireContext())
         lstIdea.adapter = feedsPagingAdapter.withLoadStateFooter(LoadStateAdapter { feedsPagingAdapter.retry() })
     }
@@ -87,14 +91,9 @@ class HomeFragment : Fragment() {
     private fun setupViewModel() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.pagingDataFlow.collectLatest { pagingData ->
-                if (pagingData != null) {
-                    feedsPagingAdapter.submitData(pagingData)
-                } else {
-                    Log.e("HomeFragment", "No data received.")
-                }
+                feedsPagingAdapter.submitData(pagingData)
             }
         }
-
     }
 
     private fun setupSearchFunctionality() {
@@ -107,7 +106,7 @@ class HomeFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = editTextSearch.text.toString().trim()
                 if (query.isNotEmpty()) {
-                    viewModel.updateSearchQuery(query) // Ensure this method is public
+                    viewModel.updateSearchQuery(query)
                 } else {
                     Toast.makeText(requireContext(), "Masukkan teks untuk pencarian", Toast.LENGTH_SHORT).show()
                 }
@@ -170,11 +169,10 @@ class HomeFragment : Fragment() {
         txtFeedback.text = detailIdea.idea.feedback ?: "No feedback provided"
 
         dialogView.findViewById<Button>(R.id.btnDownload).setOnClickListener {
-            val fileId = detailIdea.idea.id.toString() // Ambil ID file dari detailIdea
-            viewModel.downloadFile(fileId) { success, message ->  // Hanya dua parameter yang dibutuhkan
+            val fileId = detailIdea.idea.id.toString()
+            viewModel.downloadFile(fileId) { success, message ->
                 if (success) {
-                    // Tampilkan path file
-                    Log.d("Download", "Download berhasil, file disimpan di: $message") // Message berisi path
+                    Log.d("Download", "Download berhasil, file disimpan di: $message")
                     Toast.makeText(requireContext(), "Download berhasil: $message", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Download", "Download gagal: $message")
@@ -187,4 +185,3 @@ class HomeFragment : Fragment() {
         bottomSheetDialog.show()
     }
 }
-

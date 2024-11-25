@@ -32,40 +32,40 @@ class NetworkConfig(private val context: Context) {
 
     // General Retrofit setup with authentication headers
     private fun getRetrofit(): Retrofit {
+        // Setup HTTP logging interceptor
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        // OkHttp client with logging and header interceptor
+        // OkHttp client with logging and authentication header interceptor
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
             .addInterceptor { chain ->
                 val sharedPreferences = context.getSharedPreferences("app_prefs", MODE_PRIVATE)
                 val token = sharedPreferences.getString("bearer_token", null)
 
-                // Add Bearer Token header if available
-                val request = chain.request().newBuilder()
-                    .apply {
-                        token?.let {
-                            addHeader("Authorization", "Bearer $it")
-                        }
-                    }
-                    .build()
+                // Menambahkan header Authorization jika token tersedia
+                val requestBuilder = chain.request().newBuilder()
+                token?.let {
+                    requestBuilder.addHeader("Authorization", "Bearer $it")
+                }
 
-                chain.proceed(request)
+                // Melanjutkan dengan request yang telah dimodifikasi
+                chain.proceed(requestBuilder.build())
             }
             .build()
 
+        // Membangun Retrofit dengan OkHttpClient yang telah dikonfigurasi
         return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
+            .baseUrl(Constants.BASE_URL) // Pastikan URL yang sesuai di Constants
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create(gson)) // Konverter Gson untuk LocalDateTime
             .build()
     }
 
-    // Function to get IdeaServices (using general Retrofit setup)
+    // Fungsi untuk mendapatkan layanan IdeaServices
     fun getIdeaServices(): IdeaServices = getRetrofit().create(IdeaServices::class.java)
 
-    // Function to get AuthServices (using general Retrofit setup)
+    // Fungsi untuk mendapatkan layanan AuthServices
     fun getAuthService(): AuthServices = getRetrofit().create(AuthServices::class.java)
 }
